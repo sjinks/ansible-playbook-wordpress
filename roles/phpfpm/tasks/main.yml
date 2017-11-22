@@ -1,29 +1,20 @@
 ---
-- set_fact:
-    phpver: 7.1
-    cacheable: true
-  when: (ansible_distribution == "Ubuntu") and ((ansible_distribution_major_version > "17") or (ansible_distribution_release == "artful"))
-
-- set_fact:
-    phpver: 7.0
-    cacheable: true
-  when: ((ansible_distribution == "Ubuntu") and ((ansible_distribution_major_version < "17") or (ansible_distribution_release == "zesty"))) or (ansible_distribution == "Debian")
-
 - name: Install php-fpm
   package: name={{ item }} state=present
   with_items:
-    - php{{ phpver }}-fpm
-    - php{{ phpver }}-mbstring
-    - php{{ phpver }}-curl
-    - php{{ phpver }}-gd
-    - php{{ phpver }}-mysql
-    - php{{ phpver }}-json
-    - php{{ phpver }}-xml
-    - php-imagick
+    - php{{ php_ver }}-fpm
+    - php{{ php_ver }}-curl
+    - php{{ php_ver }}-gd
+    - php{{ php_ver }}-mysql
+    - php{{ php_ver }}-json
+    - "{{ php_imagick }}"
+    - "{{ php_mbstring }}"
+    - "{{ php_xml }}"
+  when: item != ""
 
 - name: Install pool file
-  template: src=pool.conf.j2 dest=/etc/php/{{ phpver }}/fpm/pool.d/{{ user_name }}.conf owner=root group=root mode=0644
+  template: src=pool.conf.j2 dest={{ php_etc_base }}/fpm/pool.d/{{ user_name }}.conf owner=root group=root mode=0644
   notify: restart fpm
 
 - name: Enable php-fpm
-  service: name=php{{ phpver }}-fpm enabled=yes state=started
+  service: name=php{{ php_ver }}-fpm enabled=yes state=started

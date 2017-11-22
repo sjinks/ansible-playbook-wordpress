@@ -7,9 +7,3 @@
 
 - name: Install certbot
   apt: name=certbot state=latest
-
-- name: Install ssl-deploy-hook
-  copy: src=ssl-deploy-hook dest=/usr/local/sbin/ssl-deploy-hook owner=root group=root mode=0750
-
-- name: Set up cron job
-  template: src=renew-ssl-certs.j2 dest=/etc/cron.d/renew-ssl-certs owner=root group=root mode=0644 force=false

@@ -1,0 +1,27 @@
+---
+- set_fact:
+    php_ver: 5
+    php_etc_base: /etc/php5
+    php_imagick: php5-imagick
+    php_mbstring: ""
+    php_xml: ""
+    cacheable: true
+  when: (ansible_distribution == "Debian") and (ansible_distribution_major_version <= "8")
+
+- set_fact:
+    php_ver: 7.1
+    php_etc_base: /etc/php/7.1
+    php_imagick: php-imagick
+    php_mbstring: php7.1-mbstring
+    php_xml: php7.1-xml
+    cacheable: true
+  when: (ansible_distribution == "Ubuntu") and ((ansible_distribution_major_version > "17") or (ansible_distribution_release == "artful"))
+
+- set_fact:
+    php_ver: 7.0
+    php_etc_base: /etc/php/7.0
+    php_imagick: php-imagick
+    php_mbstring: php7.0-mbstring
+    php_xml: php7.0-xml
+    cacheable: true
+  when: php_ver is not defined

@@ -4,3 +4,17 @@
 
 - include_tasks: debian9.yml
   when: (ansible_distribution == "Debian") and (ansible_distribution_major_version == "9")
+
+- include_tasks: debian8.yml
+  when: (ansible_distribution == "Debian") and (ansible_distribution_major_version == "8")
+
+- name: Install ssl-deploy-hook
+  copy: src=ssl-deploy-hook dest=/usr/local/sbin/ssl-deploy-hook owner=root group=root mode=0750
+
+- name: Set up cron job
+  template: src=renew-ssl-certs.j2 dest=/etc/cron.d/renew-ssl-certs owner=root group=root mode=0644 force=false
+  when: not ((ansible_distribution == "Debian") and (ansible_distribution_major_version == "8"))
+
+- name: Set up cron job
+  template: src=renew-ssl-certs-old.j2 dest=/etc/cron.d/renew-ssl-certs owner=root group=root mode=0644 force=false
+  when: (ansible_distribution == "Debian") and (ansible_distribution_major_version == "8")
