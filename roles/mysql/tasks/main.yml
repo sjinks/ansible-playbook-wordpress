@@ -1,13 +1,29 @@
 ---
+- set_fact:
+    mysql_svc: mysql
+    mysql_client: mysql-client
+    mysql_server: mysql-server
+    mysql_pyconn: python-mysqldb
+    cacheable: True
+  when: (ansible_distribution == "Debian") or (ansible_distribution == "Ubuntu")
+
+- set_fact:
+    mysql_svc: mariadb
+    mysql_client: mariadb
+    mysql_server: mariadb-server
+    mysql_pyconn: MySQL-python
+    cacheable: True
+  when: (ansible_distribution == "CentOS")
+
 - name: Install MySQL
   package: name={{ item }} state=present
   with_items:
-    - mysql-client
-    - mysql-server
-    - python-mysqldb
+    - "{{ mysql_client }}"
+    - "{{ mysql_server }}"
+    - "{{ mysql_pyconn }}"
 
 - name: Enable MySQL
-  service: name=mysql enabled=yes state=started
+  service: name={{ mysql_svc }} enabled=yes state=started
 
 - name: Create database
   mysql_db: config_file=/etc/mysql/debian.cnf name={{ mysql_db }} state=present

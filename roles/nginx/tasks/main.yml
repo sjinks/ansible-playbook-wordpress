@@ -1,4 +1,20 @@
 ---
+- set_fact:
+    nginx_user: nginx
+    nginx_site_dir: /etc/nginx/conf.d
+    nginx_site_suffix: ".conf"
+    nginx_enable_site: False
+    cacheable: true
+  when: ansible_distribution == "CentOS"
+
+- set_fact:
+    nginx_user: www-data
+    nginx_site_dir: /etc/nginx/sites-available
+    nginx_site_suffix: ""
+    nginx_enable_site: True
+    cacheable: true
+  when: ansible_distribution != "CentOS"
+
 - name: Install nginx
   package: name=nginx state=present
 
@@ -12,3 +28,8 @@
 
 - name: Enable nginx
   service: name=nginx enabled=yes state=started
+
+- name: Allow nginx to access home
+  acl: path={{ getent_passwd[user_name][4] }} state=present etype={{ item.etype }} permissions={{ item.permissions }} entity={{ item.entity }}
+  with_items:
+    - { etype: user,  permissions: r-x, entity: "{{ nginx_user }}" }

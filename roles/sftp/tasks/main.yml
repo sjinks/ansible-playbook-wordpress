@@ -1,4 +1,14 @@
 ---
+- set_fact:
+    ssh_svc: sshd
+    cacheable: true
+  when: ansible_distribution == "CentOS"
+
+- set_fact:
+    ssh_svc: ssh
+    cacheable: true
+  when: ansible_distribution != "CentOS"
+
 - name: Install OpenSSH server
   package: name=openssh-server state=present
 
@@ -13,4 +23,4 @@
   notify: reload ssh
 
 - name: Make sure SSH is enabled
-  service: name=ssh enabled=yes state=started
+  service: name={{ ssh_svc }} enabled=yes state=started

@@ -13,7 +13,7 @@
   when: item != ""
 
 - name: Install pool file
-  template: src=pool.conf.j2 dest={{ php_etc_base }}/fpm/pool.d/{{ user_name }}.conf owner=root group=root mode=0644
+  template: src=pool.conf.j2 dest={{ php_fpm_pool }}/{{ user_name }}.conf owner=root group=root mode=0644
   notify: restart fpm
 
 - name: Enable php-fpm

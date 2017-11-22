@@ -3,7 +3,7 @@
   package: name={{ item }} state=present
   with_items:
     - sudo
-    - php{{ php_ver }}
+    - php{{ php_ver }}-cli
     - php{{ php_ver }}-json
     - php{{ php_ver }}-mysql
 

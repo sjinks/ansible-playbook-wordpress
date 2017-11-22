@@ -1,0 +1,6 @@
+---
+- name: Install epel-release
+  yum: name=epel-release state=latest
+
+- name: Install certbot
+  yum: name=certbot state=latest update_cache=yes

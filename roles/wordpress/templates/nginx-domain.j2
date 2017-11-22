@@ -22,14 +22,14 @@ server {
 		include /etc/nginx/fastcgi_params;
 		fastcgi_param SCRIPT_NAME /index.php;
 		fastcgi_param SCRIPT_FILENAME $document_root/index.php;
-		fastcgi_pass unix:/run/shm/fpm-{{ user_name }}.sock;
+		fastcgi_pass unix:{{ php_fpm_sock_pfx }}/fpm-{{ user_name }}.sock;
 	}
 
         location ~ \.php$ {
 		try_files $uri @wordpress;
 		include /etc/nginx/fastcgi_params;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-		fastcgi_pass unix:/run/shm/fpm-{{ user_name }}.sock;
+		fastcgi_pass unix:{{ php_fpm_sock_pfx }}/fpm-{{ user_name }}.sock;
 	}
 
 	location ~ \.(css|js|htm|html|txt|ico|xml|gif|png|jpg|flv|swf|zip|gz|JPG|bz2|deb)$ {
@@ -88,14 +88,14 @@ server {
 		include /etc/nginx/fastcgi_params;
 		fastcgi_param SCRIPT_NAME /index.php;
 		fastcgi_param SCRIPT_FILENAME $document_root/index.php;
-		fastcgi_pass unix:/run/shm/fpm-{{ user_name }}.sock;
+		fastcgi_pass unix:{{ php_fpm_sock_pfx }}/fpm-{{ user_name }}.sock;
 	}
 
         location ~ \.php$ {
 		try_files $uri @wordpress;
 		include /etc/nginx/fastcgi_params;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-		fastcgi_pass unix:/run/shm/fpm-{{ user_name }}.sock;
+		fastcgi_pass unix:{{ php_fpm_sock_pfx }}/fpm-{{ user_name }}.sock;
 	}
 
 	location ~ \.(css|js|htm|html|txt|ico|xml|gif|png|jpg|flv|swf|zip|gz|JPG|bz2|deb)$ {

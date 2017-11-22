@@ -21,7 +21,6 @@
     - { etype: group, permissions: ---, entity: "" }
     - { etype: other, permissions: ---, entity: "" }
     - { etype: mask,  permissions: r-x, entity: "" }
-    - { etype: user,  permissions: r-x, entity: "www-data" }
     - { etype: user,  permissions: r-x, entity: "{{ user_name }}" }
 
 - name: Create sites subdirectory

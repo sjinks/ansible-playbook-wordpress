@@ -3,7 +3,7 @@
   file: name="{{ getent_passwd[user_name][4] }}/sites/{{ wp_domain }}" state=directory owner={{ user_name }} group={{ user_name }} mode=0755
 
 - name: Download WordPress
-  command: wp core download --locale={{ wp_locale|escape }}
+  command: /usr/local/bin/wp core download --locale={{ wp_locale|escape }}
   become: yes
   become_user: "{{ user_name }}"
   args:
@@ -11,7 +11,7 @@
     creates: "{{ getent_passwd[user_name][4] }}/sites/{{ wp_domain }}/wp-admin"
 
 - name: Create wp-config.php
-  command: wp config create --dbname="{{ mysql_db|escape }}" --dbuser="{{ mysql_user|escape }}" --dbpass="{{ mysql_pass|escape }}"
+  command: /usr/local/bin/wp config create --dbname="{{ mysql_db|escape }}" --dbuser="{{ mysql_user|escape }}" --dbpass="{{ mysql_pass|escape }}"
   become: yes
   become_user: "{{ user_name }}"
   args:
@@ -19,7 +19,7 @@
     creates: "{{ getent_passwd[user_name][4] }}/sites/{{ wp_domain }}/wp-config.php"
 
 - name: Get DB_NAME
-  command: wp config get --constant=DB_NAME
+  command: /usr/local/bin/wp config get --constant=DB_NAME
   changed_when: False
   become: yes
   become_user: "{{ user_name }}"
@@ -28,7 +28,7 @@
   register: wp_dbname
 
 - name: Get DB_USER
-  command: wp config get --constant=DB_USER
+  command: /usr/local/bin/wp config get --constant=DB_USER
   changed_when: False
   become: yes
   become_user: "{{ user_name }}"
@@ -37,7 +37,7 @@
   register: wp_dbuser
 
 - name: Get DB_PASSWORD
-  command: wp config get --constant=DB_PASSWORD
+  command: /usr/local/bin/wp config get --constant=DB_PASSWORD
   changed_when: False
   become: yes
   become_user: "{{ user_name }}"
@@ -46,7 +46,7 @@
   register: wp_dbpass
 
 - name: Update wp-config.php
-  command: wp config create --dbname="{{ mysql_db|escape }}" --dbuser="{{ mysql_user|escape }}" --dbpass="{{ mysql_pass|escape }}" --force
+  command: /usr/local/bin/wp config create --dbname="{{ mysql_db|escape }}" --dbuser="{{ mysql_user|escape }}" --dbpass="{{ mysql_pass|escape }}" --force
   become: yes
   become_user: "{{ user_name }}"
   args:
@@ -55,7 +55,7 @@
   when: (mysql_db != wp_dbname.stdout) or (mysql_user != wp_dbuser.stdout) or (mysql_pass != wp_dbpass.stdout)
 
 - name: Check WordPress is installed
-  command: wp core is-installed
+  command: /usr/local/bin/wp core is-installed
   failed_when: False
   changed_when: False
   become: yes
@@ -67,9 +67,9 @@
 - name: Install WordPress
   command: |
     {% if skip_ssl %}
-    wp core install --url="http://{{ wp_domain|escape }}" --title="{{ wp_title|escape }}" --admin_user="{{ wp_admin_name|escape }}" --admin_password="{{ wp_admin_pass|escape }}" --admin_email="{{ wp_admin_email|escape }}" --skip-email
+    /usr/local/bin/wp core install --url="http://{{ wp_domain|escape }}" --title="{{ wp_title|escape }}" --admin_user="{{ wp_admin_name|escape }}" --admin_password="{{ wp_admin_pass|escape }}" --admin_email="{{ wp_admin_email|escape }}" --skip-email
     {% else %}
-    wp core install --url="https://{{ wp_domain|escape }}" --title="{{ wp_title|escape }}" --admin_user="{{ wp_admin_name|escape }}" --admin_password="{{ wp_admin_pass|escape }}" --admin_email="{{ wp_admin_email|escape }}" --skip-email
+    /usr/local/bin/wp core install --url="https://{{ wp_domain|escape }}" --title="{{ wp_title|escape }}" --admin_user="{{ wp_admin_name|escape }}" --admin_password="{{ wp_admin_pass|escape }}" --admin_email="{{ wp_admin_email|escape }}" --skip-email
     {% endif %}
   become: yes
   become_user: "{{ user_name }}"
@@ -88,10 +88,12 @@
     - name: Install the default site
       block:
         - name: Copy site template
-          template: src=nginx-domain-certbot.j2 dest="/etc/nginx/sites-available/{{ wp_domain }}" mode=0644 owner=root group=root force=yes
-        - name: Enable the default site
-          file: src="/etc/nginx/sites-available/{{ wp_domain }}" dest="/etc/nginx/sites-enabled/{{ wp_domain }}" state=link
+          template: src=nginx-domain-certbot.j2 dest="{{ nginx_site_dir }}/{{ wp_domain }}{{ nginx_site_suffix }}" mode=0644 owner=root group=root force=yes
           notify: reload nginx
+        - name: Enable the default site
+          file: src="{{ nginx_site_dir }}/{{ wp_domain }}{{ nginx_site_suffix }}" dest="/etc/nginx/sites-enabled/{{ wp_domain }}{{ nginx_site_suffix }}" state=link
+          notify: reload nginx
+          when: nginx_enable_site
         - name: Flush handlers
           meta: flush_handlers
         - name: Install the SSL certificate
@@ -100,11 +102,12 @@
   when: skip_ssl == False
 
 - name: Install nginx vhost
-  template: src=nginx-domain.j2 dest="/etc/nginx/sites-available/{{ wp_domain }}" mode=0644 owner=root group=root force=yes
+  template: src=nginx-domain.j2 dest="{{ nginx_site_dir }}/{{ wp_domain }}{{ nginx_site_suffix }}" mode=0644 owner=root group=root force=yes
   notify: reload nginx
 
 - name: Enable the vhost
-  file: src="/etc/nginx/sites-available/{{ wp_domain }}" dest="/etc/nginx/sites-enabled/{{ wp_domain }}" state=link
+  file: src="{{ nginx_site_dir }}/{{ wp_domain }}{{ nginx_site_suffix }}" dest="/etc/nginx/sites-enabled/{{ wp_domain }}{{ nginx_site_suffix }}" state=link
+  when: nginx_enable_site
   notify: reload nginx
 
 - name: Run handlers
