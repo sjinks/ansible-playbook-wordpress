@@ -1,0 +1,28 @@
+---
+- name: Install acl
+  package: name=acl state=present
+
+- name: Create sftponly group
+  group: name=sftponly
+
+- name: Create user
+  user: name={{ user_name }} createhome=yes groups=sftponly password={{ user_pass|password_hash('sha512') }} update_password=on_create expires=0
+
+- name: Get home directory
+  getent: database=passwd key={{ user_name }} split=":"
+
+- name: Set attributes of the home directory
+  file: name={{ getent_passwd[user_name][4] }} state=directory owner=root group={{ user_name }} mode=0750
+
+- name: Set ACL for home
+  acl: path={{ getent_passwd[user_name][4] }} state=present etype={{ item.etype }} permissions={{ item.permissions }} entity={{ item.entity }}
+  with_items:
+    - { etype: user,  permissions: rwx, entity: "" }
+    - { etype: group, permissions: ---, entity: "" }
+    - { etype: other, permissions: ---, entity: "" }
+    - { etype: mask,  permissions: r-x, entity: "" }
+    - { etype: user,  permissions: r-x, entity: "www-data" }
+    - { etype: user,  permissions: r-x, entity: "{{ user_name }}" }
+
+- name: Create sites subdirectory
+  file: name="{{ getent_passwd[user_name][4] }}/sites" state=directory owner={{ user_name }} group={{ user_name }} mode=0755

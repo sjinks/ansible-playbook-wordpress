@@ -1,0 +1,19 @@
+---
+- name: Install php-fpm
+  package: name={{ item }} state=present
+  with_items:
+    - php7.0-fpm
+    - php7.0-mbstring
+    - php7.0-curl
+    - php7.0-gd
+    - php7.0-mysql
+    - php7.0-json
+    - php7.0-xml
+    - php-imagick
+
+- name: Install pool file
+  template: src=pool.conf.j2 dest=/etc/php/7.0/fpm/pool.d/{{ user_name }}.conf owner=root group=root mode=0644
+  notify: restart fpm
+
+- name: Enable php-fpm
+  service: name=php7.0-fpm enabled=yes state=started

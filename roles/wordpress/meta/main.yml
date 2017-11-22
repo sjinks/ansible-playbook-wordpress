@@ -1,0 +1,7 @@
+---
+dependencies:
+  - { role: wpcli   }
+  - { role: mysql   }
+  - { role: user    }
+  - { role: nginx   }
+  - { role: certbot }

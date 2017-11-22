@@ -1,0 +1,4 @@
+---
+mysql_user: wordpress
+mysql_pass: password
+mysql_db:   wordpress

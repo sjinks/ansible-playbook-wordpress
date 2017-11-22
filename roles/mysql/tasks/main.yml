@@ -1,0 +1,16 @@
+---
+- name: Install MySQL
+  package: name={{ item }} state=present
+  with_items:
+    - mysql-client
+    - mysql-server
+    - python-mysqldb
+
+- name: Enable MySQL
+  service: name=mysql enabled=yes state=started
+
+- name: Create database
+  mysql_db: config_file=/etc/mysql/debian.cnf name={{ mysql_db }} state=present
+
+- name: Create mysql user
+  mysql_user: config_file=/etc/mysql/debian.cnf name={{ mysql_user }} password={{ mysql_pass }} state=present priv="{{ mysql_db }}.*:ALL"

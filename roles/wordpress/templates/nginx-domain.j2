@@ -1,0 +1,109 @@
+{% if skip_ssl %}
+server {
+	listen 80;
+	server_name {{ wp_domain }} www.{{ wp_domain }};
+
+	access_log /var/log/nginx/{{ wp_domain }}-access.log combined;
+	error_log /var/log/nginx/{{ wp_domain }}-error.log;
+
+	root {{ getent_passwd[user_name][4] }}/sites/{{ wp_domain }};
+
+	index index.php;
+	error_page 404 = @wordpress;
+	log_not_found off;
+
+	location ^~ /wp-content/uploads/ {
+		location ~ \.(css|js|htm|html|txt|ico|xml|gif|png|jpg|flv|swf|zip|gz|JPG|bz2|deb)$ {
+			expires 30d;
+		}
+	}
+
+	location @wordpress {
+		include /etc/nginx/fastcgi_params;
+		fastcgi_param SCRIPT_NAME /index.php;
+		fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+		fastcgi_pass unix:/run/shm/fpm-{{ user_name }}.sock;
+	}
+
+        location ~ \.php$ {
+		try_files $uri @wordpress;
+		include /etc/nginx/fastcgi_params;
+		fastcgi_pass SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_pass unix:/run/shm/fpm-{{ user_name }}.sock;
+	}
+
+	location ~ \.(css|js|htm|html|txt|ico|xml|gif|png|jpg|flv|swf|zip|gz|JPG|bz2|deb)$ {
+		expires 30d;
+	}
+
+	location ~ (/(?!\.well-known/)(\.|((readme|license|changelog)\.(html?|txt|md)$)))|(\.(mo|pot?)$) {
+		return 302 /;
+	}
+}
+{% else %}
+server {
+	listen 80;
+	server_name {{ wp_domain }} www.{{ wp_domain }};
+	root /usr/share/nginx/html;
+
+	access_log /var/log/nginx/{{ wp_domain }}-access.log combined;
+	error_log /var/log/nginx/{{ wp_domain }}-error.log;
+
+	location ^~ /.well-known/ {
+		root /usr/share/nginx/html;
+	}
+
+	location ~ ^/.* {
+		return 301 https://$http_host$request_uri;
+	}
+}
+
+server {
+	listen 443 http2 ssl;
+	server_name {{ wp_domain }} www.{{ wp_domain }};
+
+	ssl on;
+	ssl_stapling on;
+	ssl_stapling_verify on;
+	ssl_certificate /etc/letsencrypt/live/{{ wp_domain }}/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/{{ wp_domain }}/privkey.pem;
+	ssl_trusted_certificate /etc/letsencrypt/live/{{ wp_domain }}/chain.pem;
+
+	access_log /var/log/nginx/{{ wp_domain }}-access.log combined;
+	error_log /var/log/nginx/{{ wp_domain }}-error.log;
+
+	root {{ getent_passwd[user_name][4] }}/sites/{{ wp_domain }};
+
+	index index.php;
+	error_page 404 = @wordpress;
+	log_not_found off;
+
+	location ^~ /wp-content/uploads/ {
+		location ~ \.(css|js|htm|html|txt|ico|xml|gif|png|jpg|flv|swf|zip|gz|JPG|bz2|deb)$ {
+			expires 30d;
+		}
+	}
+
+	location @wordpress {
+		include /etc/nginx/fastcgi_params;
+		fastcgi_param SCRIPT_NAME /index.php;
+		fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+		fastcgi_pass unix:/run/shm/fpm-{{ user_name }}.sock;
+	}
+
+        location ~ \.php$ {
+		try_files $uri @wordpress;
+		include /etc/nginx/fastcgi_params;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_pass unix:/run/shm/fpm-{{ user_name }}.sock;
+	}
+
+	location ~ \.(css|js|htm|html|txt|ico|xml|gif|png|jpg|flv|swf|zip|gz|JPG|bz2|deb)$ {
+		expires 30d;
+	}
+
+	location ~ (/(?!\.well-known/)(\.|((readme|license|changelog)\.(html?|txt|md)$)))|(\.(mo|pot?)$) {
+		return 302 /;
+	}
+}
+{% endif %}

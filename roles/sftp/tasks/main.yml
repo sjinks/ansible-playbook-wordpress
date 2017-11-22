@@ -1,0 +1,16 @@
+---
+- name: Install OpenSSH server
+  package: name=openssh-server state=present
+
+- name: Set up SFTP
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    block: |
+      Match Group sftponly
+          ForceCommand internal-sftp
+          ChrootDirectory /%h
+    backup: yes
+  notify: reload ssh
+
+- name: Make sure SSH is enabled
+  service: name=ssh enabled=yes state=started

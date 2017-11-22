@@ -1,0 +1,14 @@
+---
+- name: Install nginx
+  package: name=nginx state=present
+
+- name: Copy files
+  copy: src={{ item }} dest=/etc/nginx/conf.d/{{ item }} owner=root group=root mode=0644
+  with_items:
+    - client_max_body_size.conf
+    - hide_server_tokens.conf
+    - ssl.conf
+  notify: reload nginx
+
+- name: Enable nginx
+  service: name=nginx enabled=yes state=started

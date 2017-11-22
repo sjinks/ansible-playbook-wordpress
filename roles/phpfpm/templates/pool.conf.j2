@@ -1,0 +1,16 @@
+[{{ user_name }}]
+user           = {{ user_name }}
+group          = {{ user_name }}
+listen         = /run/shm/fpm-{{ user_name }}.sock
+listen.backlog = 2048
+listen.owner   = {{ user_name }}
+listen.group   = {{ user_name }}
+listen.mode    = 0666
+
+pm                      = {{ fpm_pm }}
+pm.max_children         = {{ fpm_max_children }}
+pm.start_servers        = {{ fpm_start_servers }}
+pm.min_spare_servers    = {{ fpm_min_spare_servers }}
+pm.max_spare_servers    = {{ fpm_max_spare_servers }}
+pm.process_idle_timeout = {{ fpm_process_idle_timeout }}
+pm.max_requests         = {{ fpm_max_requests }}

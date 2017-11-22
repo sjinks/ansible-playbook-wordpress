@@ -1,0 +1,11 @@
+---
+- hosts: all
+  roles:
+    - user
+    - sftp
+    - certbot
+    - mysql
+    - phpfpm
+    - nginx
+    - wpcli
+    - wordpress

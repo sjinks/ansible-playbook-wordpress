@@ -1,0 +1,21 @@
+---
+fpm_pm: ondemand
+fpm_max_children: 3
+fpm_start_servers: 3
+fpm_min_spare_servers: 0
+fpm_max_spare_servers: 5
+fpm_process_idle_timeout: 10
+fpm_max_requests: 500
+
+# fpm_pm: ondemand
+#    fpm_max_children is the maximum number of children that can be alive at the same time
+#    fpm_process_idle_timeout is the number of seconds after which an idle process will be killed
+#
+# fpm_pm: static
+#    fpm_max_children is the number of child processes
+#
+# fpm_pm: dynamic
+#    fpm_max_children is the maximum number of children that can be alive at the same time
+#    fpm_start_servers is the number of children created on startup
+#    fpm_min_spare_servers is the minimum number of children in 'idle' state
+#    fpm_max_spare_servers is the maximum number of children in 'idle' state
