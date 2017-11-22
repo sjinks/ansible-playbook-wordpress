@@ -4,7 +4,7 @@ Sample Ansible playbook to install LEMP + Certbot + WordPress
 
 **Work In Progress**
 
-Tested with Ubuntu 16.04, 17.04, 17.10, Debian 8.9, 9.2; CentOS to follow.
+Tested with Ubuntu 16.04, 17.04, 17.10, Debian 8.9, 9.2, CentOS 7.
 
 ## Variables
 
