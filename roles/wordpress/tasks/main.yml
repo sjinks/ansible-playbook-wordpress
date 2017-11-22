@@ -65,7 +65,12 @@
   register: wpinstalled
 
 - name: Install WordPress
-  command: wp core install --url="https://{{ wp_domain|escape }}" --title="{{ wp_title|escape }}" --admin_user="{{ wp_admin_name|escape }}" --admin_password="{{ wp_admin_pass|escape }}" --admin_email="{{ wp_admin_email|escape }}" --skip-email
+  command: |
+    {% if skip_ssl %}
+    wp core install --url="http://{{ wp_domain|escape }}" --title="{{ wp_title|escape }}" --admin_user="{{ wp_admin_name|escape }}" --admin_password="{{ wp_admin_pass|escape }}" --admin_email="{{ wp_admin_email|escape }}" --skip-email
+    {% else %}
+    wp core install --url="https://{{ wp_domain|escape }}" --title="{{ wp_title|escape }}" --admin_user="{{ wp_admin_name|escape }}" --admin_password="{{ wp_admin_pass|escape }}" --admin_email="{{ wp_admin_email|escape }}" --skip-email
+    {% endif %}
   become: yes
   become_user: "{{ user_name }}"
   args:
