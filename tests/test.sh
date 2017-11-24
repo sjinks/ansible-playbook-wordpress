@@ -53,7 +53,7 @@ done
 lxc exec centos7 -- yum update
 lxc exec centos7 -- yum install python
 
-( cd ../; ansible-playbook -i .test/servers site.yml )
+( cd ../; ansible-playbook -i tests/servers site.yml )
 
 for i in xenial zesty artful stretch jessie centos7; do
     echo -n "$i: "
