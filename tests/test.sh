@@ -51,7 +51,7 @@ for i in xenial zesty artful stretch jessie; do
     lxc exec $i -- apt-get -y -qq install python
 done
 lxc exec centos7 -- yum update
-lxc exec centos7 -- yum install python
+lxc exec centos7 -- yum -y install python
 
 ( cd ../; ansible-playbook -i tests/servers site.yml )
 
