@@ -1,19 +1,6 @@
 ---
-- set_fact:
-    nginx_user: nginx
-    nginx_site_dir: /etc/nginx/conf.d
-    nginx_site_suffix: ".conf"
-    nginx_enable_site: False
-    cacheable: true
-  when: ansible_distribution == "CentOS"
-
-- set_fact:
-    nginx_user: www-data
-    nginx_site_dir: /etc/nginx/sites-available
-    nginx_site_suffix: ""
-    nginx_enable_site: True
-    cacheable: true
-  when: ansible_distribution != "CentOS"
+- name: Load distro specific variables
+  include_vars: "{{ ansible_os_family | lower }}.yml"
 
 - name: Install nginx
   package: name=nginx state=present

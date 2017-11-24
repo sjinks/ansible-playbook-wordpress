@@ -1,0 +1,5 @@
+---
+nginx_user: nginx
+nginx_site_dir: /etc/nginx/conf.d
+nginx_site_suffix: ".conf"
+nginx_enable_site: False

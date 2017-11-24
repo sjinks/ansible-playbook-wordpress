@@ -1,19 +1,6 @@
 ---
-- set_fact:
-    mysql_svc: mysql
-    mysql_client: mysql-client
-    mysql_server: mysql-server
-    mysql_pyconn: python-mysqldb
-    cacheable: True
-  when: (ansible_distribution == "Debian") or (ansible_distribution == "Ubuntu")
-
-- set_fact:
-    mysql_svc: mariadb
-    mysql_client: mariadb
-    mysql_server: mariadb-server
-    mysql_pyconn: MySQL-python
-    cacheable: True
-  when: (ansible_distribution == "CentOS")
+- name: Load distro specific variables
+  include_vars: "{{ ansible_os_family | lower }}.yml"
 
 - name: Install MySQL
   package: name={{ item }} state=present

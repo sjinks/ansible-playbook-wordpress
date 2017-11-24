@@ -1,0 +1,5 @@
+---
+nginx_user: www-data
+nginx_site_dir: /etc/nginx/sites-available
+nginx_site_suffix: ""
+nginx_enable_site: True

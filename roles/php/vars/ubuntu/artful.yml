@@ -1,0 +1,16 @@
+---
+php_ver: 7.1
+php_fpm:
+  - php{{ php_ver }}-fpm
+php_cli:
+  - php{{ php_ver }}-cli
+php_ext:
+  - php{{ php_ver }}-curl
+  - php{{ php_ver }}-gd
+  - php{{ php_ver }}-mysql
+  - php{{ php_ver }}-mbstring
+  - php{{ php_ver }}-xml
+  - php-imagick
+php_fpm_pool: /etc/php/{{ php_ver }}/fpm/pool.d
+php_fpm_service: php{{ php_ver }}-fpm
+php_fpm_sock_pfx: /run/shm

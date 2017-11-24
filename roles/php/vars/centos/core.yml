@@ -1,0 +1,15 @@
+---
+php_fpm:
+  - php-fpm
+php_cli:
+  - php-cli
+php_ext:
+  - php-curl
+  - php-gd
+  - php-json
+  - php-mysql
+  - php-mbstring
+  - php-xml
+php_fpm_pool: /etc/php-fpm.d
+php_fpm_service: php-fpm
+php_fpm_sock_pfx: /run/php-fpm

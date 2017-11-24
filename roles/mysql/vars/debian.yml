@@ -1,0 +1,5 @@
+---
+mysql_svc: mysql
+mysql_client: mysql-client
+mysql_server: mysql-server
+mysql_pyconn: python-mysqldb

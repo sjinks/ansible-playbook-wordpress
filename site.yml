@@ -5,7 +5,7 @@
     - sftp
     - certbot
     - mysql
-    - phpfpm
+    - php
     - nginx
     - wpcli
     - wordpress

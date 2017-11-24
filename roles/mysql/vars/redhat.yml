@@ -1,0 +1,5 @@
+---
+mysql_svc: mariadb
+mysql_client: mariadb
+mysql_server: mariadb-server
+mysql_pyconn: MySQL-python
