@@ -6,7 +6,12 @@
   group: name=sftponly
 
 - name: Create user
-  user: name={{ user_name }} createhome=yes groups=sftponly password={{ user_pass|password_hash('sha512') }} update_password=on_create expires=0
+  user: name={{ user_name }} createhome=yes groups=sftponly password={{ user_pass|password_hash('sha512') }} update_password=on_create
+  register: user_created
+
+- name: Expire user password
+  command: chage -d 0 "{{ user_name|escape }}"
+  when: user_created|changed
 
 - name: Get home directory
   getent: database=passwd key={{ user_name }} split=":"

@@ -1,4 +1,13 @@
 ---
+- name: Load distro specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution | lower }}/{{ ansible_distribution_release | lower }}.yml"
+    - "{{ ansible_distribution | lower }}/{{ ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution | lower }}/default.yml"
+    - "{{ ansible_os_family | lower }}.yml"
+    - "default.yml"
+
 - include_tasks: ubuntu.yml
   when: ansible_distribution == "Ubuntu"
 
@@ -12,12 +21,7 @@
   when: (ansible_distribution == "CentOS") and (ansible_distribution_major_version == "7")
 
 - name: Install ssl-deploy-hook
-  copy: src=ssl-deploy-hook dest=/usr/local/sbin/ssl-deploy-hook owner=root group=root mode=0750
+  copy: src=ssl-deploy-hook dest=/usr/local/sbin/ssl-deploy-hook owner=root group=root mode=0750 force=false
 
 - name: Set up cron job
   template: src=renew-ssl-certs.j2 dest=/etc/cron.d/renew-ssl-certs owner=root group=root mode=0644 force=false
-  when: not (ansible_distribution == "Debian")
-
-- name: Set up cron job
-  template: src=renew-ssl-certs-old.j2 dest=/etc/cron.d/renew-ssl-certs owner=root group=root mode=0644 force=false
-  when: (ansible_distribution == "Debian")

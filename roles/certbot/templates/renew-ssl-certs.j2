@@ -1,1 +1,1 @@
-{{ 59|random }} {{ 23|random }} * * 1	root	/usr/bin/certbot renew -q --deploy-hook /usr/local/sbin/ssl-deploy-hook
+{{ 59|random }} {{ 23|random }} * * 1	root	/usr/bin/certbot renew -q --{{ certbot_deploy_hook }} /usr/local/sbin/ssl-deploy-hook
